@@ -1,0 +1,80 @@
+<ion-header>
+  <ion-navbar>
+    <!--ion-buttons end *ngIf="afAuth.authState | async">
+          <button color="primary" ion-button icon-only (click)="addSong()">
+            <ion-icon name="add-circle"></ion-icon>
+          </button>
+        </ion-buttons-->
+
+    <ion-title>
+      <ion-item class="item item-trns text-center">
+        BlackDragonBoard
+        <ion-avatar item-end *ngIf="afAuth.authState | async" (click)="show()">
+          <img src={{currentUser.photoURL}}>
+        </ion-avatar>
+      </ion-item>
+
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <div *ngIf="afAuth.authState | async as user; else showLogin">
+    <template *ngFor="let user of users | async">
+      <template *ngIf="user.userId == currentUser.uid">
+        <template *ngIf="changeCur(user)">
+        </template>
+      </template>
+    </template>
+    <h1>Hello {{ user.displayName }}!</h1>
+    <div>
+      <ion-list >
+        <ion-item>
+          <div *ngFor="let mensaje of mensajes| async">
+            <ion-card *ngIf="Visible(mensaje.tipo,mensaje.user.userId,currentUser.friends) || mensaje.user.userId == currentUser.userId">
+              <ion-card-header>
+                <ion-avatar item-begin style="text-align:left" *ngIf="afAuth.authState | async">
+                  <img src={{mensaje.user.photoURL}}> {{ mensaje.user.displayName }}
+                </ion-avatar>
+              </ion-card-header>
+              <ion-card-content>
+                <div (click)="showOptions(mensaje.id,mensaje.user.userId)">
+                  {{mensaje.texto}}
+                </div>
+                <button ion-button clear (click)="like(mensaje.id,currentUser.uid,mensaje.like,mensaje.order)">
+                  <ion-icon name="thumbs-up"></ion-icon>
+                </button>
+                Likes: {{mensaje.like}}
+                <button ion-button clear (click)="dislike(mensaje.id,currentUser.uid,mensaje.dislike,mensaje.order)">
+                  <ion-icon name="thumbs-down"></ion-icon>
+                </button>
+                DisLikes: {{mensaje.dislike}}
+              </ion-card-content>
+            </ion-card>
+          </div>
+        </ion-item>
+      </ion-list>
+    </div>
+    <ion-fab right bottom  style="position: fixed; bottom: 2em;right: 2em;">
+      <button ion-fab (click)="addmessage()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-fab>
+    <ion-fab left bottom >
+      <button ion-fab [navPush]="friendspage" style="position: fixed; bottom: 2em; left: 2em;">
+        <ion-icon name="person-add"></ion-icon>
+      </button>
+    </ion-fab>
+  </div>
+  <ng-template #showLogin>
+    <p>Please login.</p>
+    <button ion-button color="danger" full (click)="login()" icon-right>
+      <ion-icon name="logo-googleplus"></ion-icon>
+      Login with Google
+    </button>
+    <!--button ion-button color="danger"  full (click)="loginf()" icon-right>
+          <ion-icon name="logo-facebook"></ion-icon>
+          Login with Facebook
+        </button-->
+  </ng-template>
+</ion-content>
